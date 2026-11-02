@@ -39,7 +39,7 @@ def init_db():
 
         conn.execute("""
             CREATE TABLE IF NOT EXISTS announcements (
-                id INTEGER PRIMARY KEY AUTOINCREMEMT,
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
                 team_id INTEGER NOT NULL,
                 fah_donor_id INTEGER NOT NULL,
                 donor_name TEXT NOT NULL,
