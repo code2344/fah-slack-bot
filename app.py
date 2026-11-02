@@ -78,9 +78,16 @@ def handle_fah(ack, respond, command):
                         logger.INFO(str(slack_id) + " was successfully linked to donor id " + str(donor_id))
                         respond("Success! <@" + str(user_id) + "> linked to <https://stats.foldingathome.org/donor/id/" + str(donor_id) + "|Donor " + str(donor_id) + ">! run `/fah unlink <donor_id>` to unlink a specific donor ID, or run `/fah unlink all` to unlink all of your donor IDs.")
                     elif result == "already_linked":
-                        respond("That account's already linked to " + )
+                        logger.info(str(user_id) + " was already linked to " + str(donor_id))
+                        respond("That account's already linked to you.")
+                    elif result == "claimed":
+                        respond
                 else:
                     respond("Usage: `/fah link <donor id>`\nError: it appears you put in an invalid donor id.\nThis is from the link you get if you click your username on <https://stats.foldingathome.org/team/" + str(team_id) + "|this page>.")
+    except Exception:
+        logger.exception("Error handling command")
+
+        respond("Oops! an unexpected error occured while processing your command.")
 
 
 
