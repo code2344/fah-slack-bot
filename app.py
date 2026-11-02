@@ -24,7 +24,7 @@ def handle_fah(ack, respond, command):
 
     if subcommand == "help":
         respond(
-            "*Available commands*:\n",
+            "*Available commands*:\n"
             "`/fah help` - prints this help dialog"
         )
 
