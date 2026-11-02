@@ -1,0 +1,11 @@
+[project]
+name = "fah-slack-bot"
+version = "1.0.0"
+description = "A slackbot to track folding at home stats for a specific team"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "python-dotenv>=1.2.4",
+    "requests>=2.34.2",
+    "slack-bolt>=1.30.0",
+]
