@@ -17,10 +17,6 @@ logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
     handlers=[logging.StreamHandler(), logging.FileHandler("app.log", mode="a")]
 )
-console_log_output = logging.StreamHandler()
-console_log_output.setLevel(logging.DEBUG)
-formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-console_log_output.setFormatter(formatter)
 
 @app.command("/fah")
 def handle_fah(ack, respond, command):
@@ -42,6 +38,8 @@ def handle_fah(ack, respond, command):
             "`/fah help` - prints this help dialog\n"
             "You ran: " + "`" + str(command["command"]) + " " + str(command["text"] + "`")
         )
+    elif subcommand == "link":
+        
 
 
 # Start your app
