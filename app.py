@@ -9,6 +9,7 @@ from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 
 import database
+from monitor import check_team_updates
 
 load_dotenv()
 
@@ -105,7 +106,7 @@ def handle_fah(ack, respond, command):
                     )
                     result = db.link_user(user_id, donor_id)
                     if result == "link_success":
-                        logger.INFO(
+                        logger.info(
                             str(user_id)
                             + " was successfully linked to donor id "
                             + str(donor_id)
@@ -170,6 +171,31 @@ def handle_fah(ack, respond, command):
 
 
 # Start your app
+#if __name__ == "__main__":
+#    SocketModeHandler(app, os.environ["SLACK_APP_TOKEN"]).start()
+#    logger.info("App started!")
+
+def monitor_loop():
+    channel_id = os.environ["SLACK_CHANNEL_ID"]
+
+    while True:
+        try:
+            check_team_updates(app.client, channel_id)
+        except Exception:
+            logger.exception("Error checking F@h team")
+
+        time.sleep(300)
+
 if __name__ == "__main__":
+    db.init_db()
+
+    monitor_thread = threading.Thread(
+        target=monitor_loop,
+        daemon=True,
+        name="fah-monitor"
+    )
+
+    monitor_thread.start()
+
+    logger.info("Starting Slack bot")
     SocketModeHandler(app, os.environ["SLACK_APP_TOKEN"]).start()
-    logger.info("App started!")
