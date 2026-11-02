@@ -21,6 +21,16 @@ def init_db():
         """)
 
         conn.execute("""
+            CREATE TABLE IF NOT EXISTS member_stats (
+                team_id INTEGER NOT NULL,
+                donor_name TEXT NOT NULL,
+                points INTEGER NOT NULL,
+                wus INTEGER NOT NULL,
+                PRIMARY KEY (team_id, donor_name)
+            )
+        """)
+
+        conn.execute("""
             CREATE TABLE IF NOT EXISTS fah_accounts (
                 fah_donor_id INTEGER PRIMARY KEY,
                 slack_id TEXT NOT NULL,
