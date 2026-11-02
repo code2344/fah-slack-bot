@@ -12,6 +12,12 @@ load_dotenv()
 app = App(token=os.environ.get("SLACK_BOT_TOKEN"))
 logger = logging.getLogger(__name__)
 
+logging.basicConfig(
+    level=logging.INFO,  # Capture INFO, WARNING, ERROR, and CRITICAL
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    handlers=[logging.StreamHandler(), logging.FileHandler("app.log", mode="a")]
+)
+
 @app.command("/fah")
 def handle_fah(ack, respond, command):
     ack() # send acknowledgement to slack otherwise it will error
@@ -24,7 +30,7 @@ def handle_fah(ack, respond, command):
 
     user_id = command["user_id"]
 
-    logger.info(user_id, " ran command: ", command["command"], " ", command["text"])
+    logger.info(user_id + " ran command: " + command["command"] + " " + command["text"])
 
     if subcommand == "help":
         respond(
