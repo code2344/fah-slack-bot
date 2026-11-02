@@ -10,6 +10,7 @@ load_dotenv()
 
 # Initializes your app with your bot token and socket mode handler
 app = App(token=os.environ.get("SLACK_BOT_TOKEN"))
+logger = logging.getLogger(__name__)
 
 @app.command("/fah")
 def handle_fah(ack, respond, command):
@@ -23,17 +24,17 @@ def handle_fah(ack, respond, command):
 
     user_id = command["user_id"]
 
-    logging.info(user_id, " ran command: ", command["command"], " ", command["text"])
-    
+    logger.info(user_id, " ran command: ", command["command"], " ", command["text"])
+
     if subcommand == "help":
         respond(
             "*Available commands*:\n"
             "`/fah help` - prints this help dialog\n"
-            "You ran: " + "`" + str(command["command"]) + str(command["text"])
+            "You ran: " + "`" + str(command["command"]) + str(command["text"] + "`")
         )
 
 
 # Start your app
 if __name__ == "__main__":
     SocketModeHandler(app, os.environ["SLACK_APP_TOKEN"]).start()
-    logging.info("App started!")
+    logger.info("App started!")
