@@ -80,8 +80,8 @@ def handle_fah(ack, respond, command):
                     elif result == "already_linked":
                         logger.info(str(user_id) + " was already linked to " + str(donor_id))
                         respond("That account's already linked to you.")
-                    elif result == "claimed":
-                        respond
+                    else result == "claimed":
+                        respond("That account's already claimed!") # TODO: add claim logic
                 else:
                     respond("Usage: `/fah link <donor id>`\nError: it appears you put in an invalid donor id.\nThis is from the link you get if you click your username on <https://stats.foldingathome.org/team/" + str(team_id) + "|this page>.")
     except Exception:
