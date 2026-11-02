@@ -15,7 +15,15 @@ def init_db():
                 CREATE TABLE IF NOT EXISTS users (
                     slack_id TEXT PRIMARY KEY,
                     fah_donor_id TEXT NOT NULL,
-                    fah_username TEXT NOT NULL,
                     notifications INTEGER DEFAULT 1
                 )
             """)
+
+def link_user(slack_id, fah_donor_id):
+    with sqlite3.connect(db_path) as conn:
+        conn.execute("""
+                INSERT INTO users (slack_id, fah_donor_id)
+                VALUES (?, ?)
+                ON CONFLICT(slack_id)
+                DO UPDATE SET fah_donor_id = excluded.fah_donor_id
+            """, (slack_id, fah_donor_id))
