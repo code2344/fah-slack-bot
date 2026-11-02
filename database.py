@@ -4,6 +4,8 @@ import sqlite3
 
 from dotenv import load_dotenv
 
+from app import db
+
 load_dotenv()
 db_path = str(os.getenv("DB_PATH"))
 
@@ -53,3 +55,17 @@ def link_user(slack_id, fah_donor_id):
 
         return "link_success"
 
+def get_accounts(slack_id):
+    with sqlite3.connect(db_path) as conn:
+        rows = conn.execute("""
+            SELECT fah_donor_id
+            FROM fah_accounts
+            WHERE slack_id = ?
+        """, (slack_id,)).fetchall()
+    return [row[0] for row in rows]
+
+def get_slack_user(fah_donor_id):
+    with sqlite3.connect(db_path) as conn:
+        conn.execute("""
+            SELECT slack_id
+            """)
