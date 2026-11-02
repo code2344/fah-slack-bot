@@ -207,3 +207,27 @@ def process_team_members(team_id, members):
                     wus = excluded.wus
             """, (team_id, donor_id, points, wus))
     return queued
+
+
+def get_pending_announcements():
+    with sqlite3.connect(db_path) as conn:
+        conn.row_factory = sqlite3.Row
+
+        rows = conn.execute("""
+            SELECT *
+            FROM announcements
+            WHERE status = 'pending'
+            ORDER BY id ASC
+        """).fetchall()
+
+        return [dict(row) for row in rows]
+
+def mark_announcement_set(announcement_id, slack_ts):
+    with sqlite3.connect(db_path) as conn:
+        conn.execute("""
+            UPDATE announcements
+            SET status = 'sent',
+                slack_ts = ?,
+                sent_at = CURRENT_TIMESTAMP
+            WHERE id = ? AND status = 'pending
+        """, (slack_ts, announcement_id))
