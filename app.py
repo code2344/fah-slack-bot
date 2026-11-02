@@ -36,6 +36,14 @@ logging.basicConfig(
     handlers=[logging.StreamHandler(), logging.FileHandler("app.log", mode="a")]
 )
 
+def can_you_convert_it_to_int(arg):
+    try:
+        int(arg)
+        return True
+    except ValueError:
+        return False
+
+
 @app.command("/fah")
 def handle_fah(ack, respond, command):
     ack() # send acknowledgement to slack otherwise it will error
@@ -59,6 +67,11 @@ def handle_fah(ack, respond, command):
     elif subcommand == "link":
         if not argument:
             respond("Usage: `/fah link <donor id>`\nThis is from the link you get if you click your username on <https://stats.foldingathome.org/team/" + str(team_id) + "|this page>.")
+        else:
+            if can_you_convert_it_to_int(argument):
+                #loop will go here
+            else:
+                respond("Usage: `/fah link <donor id>`\nError: it appears you put in an invalid donor id.\nThis is from the link you get if you click your username on <https://stats.foldingathome.org/team/" + str(team_id) + "|this page>.")
 
 
 
