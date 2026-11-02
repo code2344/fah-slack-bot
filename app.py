@@ -30,7 +30,7 @@ def handle_fah(ack, respond, command):
         respond(
             "*Available commands*:\n"
             "`/fah help` - prints this help dialog\n"
-            "You ran: " + "`" + str(command["command"]) + str(command["text"] + "`")
+            "You ran: " + "`" + str(command["command"]) + " " + str(command["text"] + "`")
         )
 
 
