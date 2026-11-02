@@ -3,7 +3,7 @@ import os
 
 import dotenv
 
-from database import get_slack_user, update_donor_stats, update_member_stats
+from database import get_slack_user, update_donor_stats
 from fah_api import get_team_members
 
 logger = logging.getLogger(__name__)
@@ -21,7 +21,7 @@ def check_team_updates(client, channel_id):
         donor_id = member["id"]
         donor_name = member["name"]
         donor_rank = member["rank"]
-        points = member["points"]
+        points = member["score"]
         wus = member["wus"]
 
         changes = update_donor_stats(
