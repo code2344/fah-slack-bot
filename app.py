@@ -47,31 +47,40 @@ def can_you_convert_it_to_int(arg):
 @app.command("/fah")
 def handle_fah(ack, respond, command):
     ack() # send acknowledgement to slack otherwise it will error
+    try:
+        text = command["text"].strip() # bolt returns the command as a dictionary and the part after the /fah [here] is the text part
+        parts = text.split(maxsplit=1) # split it into the parts of the command so we know the subcommand and args
 
-    text = command["text"].strip() # bolt returns the command as a dictionary and the part after the /fah [here] is the text part
-    parts = text.split(maxsplit=1) # split it into the parts of the command so we know the subcommand and args
+        subcommand = parts[0].lower() if parts else "help" # the subcommand is the first element of parts which is index zero, if it's empty then display help
+        argument = parts[1] if len(parts) > 1 else None # argument is the bit after subcmd if there actually is one
 
-    subcommand = parts[0].lower() if parts else "help" # the subcommand is the first element of parts which is index zero, if it's empty then display help
-    argument = parts[1] if len(parts) > 1 else None # argument is the bit after subcmd if there actually is one
+        user_id = command["user_id"]
 
-    user_id = command["user_id"]
+        logger.info(user_id + " ran command: " + command["command"] + " " + command["text"])
 
-    logger.info(user_id + " ran command: " + command["command"] + " " + command["text"])
-
-    if subcommand == "help":
-        respond(
-            "*Available commands*:\n"
-            "`/fah help` - prints this help dialog\n"
-            "You ran: " + "`" + str(command["command"]) + " " + str(command["text"] + "`")
-        )
-    elif subcommand == "link":
-        if not argument:
-            respond("Usage: `/fah link <donor id>`\nThis is from the link you get if you click your username on <https://stats.foldingathome.org/team/" + str(team_id) + "|this page>.")
-        else:
-            if can_you_convert_it_to_int(argument):
-                #loop will go here
+        if subcommand == "help":
+            respond(
+                "*Available commands*:\n"
+                "`/fah help` - prints this help dialog\n"
+                "You ran: " + "`" + str(command["command"]) + " " + str(command["text"] + "`")
+            )
+        elif subcommand == "link":
+            if not argument:
+                logger.debug("Responding with usage because no argument was provided")
+                respond("Usage: `/fah link <donor id>`\nThis is from the link you get if you click your username on <https://stats.foldingathome.org/team/" + str(team_id) + "|this page>.")
             else:
-                respond("Usage: `/fah link <donor id>`\nError: it appears you put in an invalid donor id.\nThis is from the link you get if you click your username on <https://stats.foldingathome.org/team/" + str(team_id) + "|this page>.")
+                if can_you_convert_it_to_int(argument):
+                    logger.debug("ID is a number, saving as donor_id!")
+                    donor_id = int(argument)
+                    logger.debug("linking user " + str(user_id) + " to donor id " + str(donor_id))
+                    result = db.link_user(user_id, donor_id)
+                    if result == "link_success":
+                        logger.INFO(str(slack_id) + " was successfully linked to donor id " + str(donor_id))
+                        respond("Success! <@" + str(user_id) + "> linked to <https://stats.foldingathome.org/donor/id/" + str(donor_id) + "|Donor " + str(donor_id) + ">! run `/fah unlink <donor_id>` to unlink a specific donor ID, or run `/fah unlink all` to unlink all of your donor IDs.")
+                    elif result == "already_linked":
+                        respond("That account's already linked to " + )
+                else:
+                    respond("Usage: `/fah link <donor id>`\nError: it appears you put in an invalid donor id.\nThis is from the link you get if you click your username on <https://stats.foldingathome.org/team/" + str(team_id) + "|this page>.")
 
 
 
