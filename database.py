@@ -4,8 +4,6 @@ import sqlite3
 
 from dotenv import load_dotenv
 
-from app import db
-
 load_dotenv()
 db_path = str(os.getenv("DB_PATH"))
 
