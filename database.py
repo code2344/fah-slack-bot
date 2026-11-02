@@ -47,6 +47,8 @@ def init_db():
                 wus_delta INTEGER NOT NULL,
                 status TEXT NOT NULL DEFAULT 'pending',
                 slack_ts TEXT,
+                total_wus INTEGER,
+                team_points INTEGER,
                 created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 sent_at TEXT
             )
@@ -158,6 +160,7 @@ def update_donor_stats(team_id, fah_donor_id, points, wus):
 
 def process_team_members(team_id, members):
     queued = 0
+    team_points = sum(member["score"] for member in members)
 
     with sqlite3.connect(db_path) as conn:
         for member in members:
@@ -170,7 +173,7 @@ def process_team_members(team_id, members):
                 SELECT points, wus
                 FROM donor_stats
                 WHERE team_id = ? AND fah_donor_id = ?
-            """,(team_id, fah_donor_id),).fetchone()
+            """,(team_id, donor_id),).fetchone()
 
             if previous is not None:
                 old_points, old_wus = previous
@@ -184,15 +187,19 @@ def process_team_members(team_id, members):
                         fah_donor_id,
                         donor_name,
                         points_delta,
-                        wus_delta
+                        wus_delta,
+                        total_wus,
+                        team_points
                         )
-                        VALUES (?, ?, ?, ?, ?)
+                        VALUES (?, ?, ?, ?, ?, ?, ?)
                     """, (
                         team_id,
                         donor_id,
                         donor_name,
                         points_delta,
-                        wus_delta
+                        wus_delta,
+                        wus,
+                        team_points
                     ))
 
                     queued += 1
@@ -202,8 +209,8 @@ def process_team_members(team_id, members):
                 )
                 VALUES (?, ?, ?, ?)
                 ON CONFLICT(team_id, fah_donor_id)
-                DO UPDATE SET 
-                    points = excluded.points
+                DO UPDATE SET
+                    points = excluded.points,
                     wus = excluded.wus
             """, (team_id, donor_id, points, wus))
     return queued
