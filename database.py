@@ -29,9 +29,13 @@ def init_db():
 
 def link_user(slack_id, fah_donor_id):
     with sqlite3.connect(db_path) as conn:
+        conn.execute(
+            "INSERT OR IGNORE INTO users (slack_id) VALUES (?)",
+            (slack_id,)
+        )
+
         conn.execute("""
-            INSERT INTO users (slack_id, fah_donor_id)
+            INSERT INTO fah_accounts (slack_id, fah_donor_id)
             VALUES (?, ?)
-            ON CONFLICT(slack_id)
-            DO UPDATE SET fah_donor_id = excluded.fah_donor_id
         """, (slack_id, fah_donor_id))
+
