@@ -9,7 +9,7 @@ API_BASE_URL = os.environ.get("API_BASE_URL")
 
 def get_team_members(team_id):
     response = requests.get(
-        f"{API_BASE_URL}/teams/{team_id}/members",
+        f"{API_BASE_URL}/team/{team_id}/members",
         timeout=20
     )
     response.raise_for_status()
