@@ -20,12 +20,12 @@ def init_db():
         """)
 
         conn.execute("""
-            CREATE TABLE IF NOT EXISTS member_stats (
+            CREATE TABLE IF NOT EXISTS donor_stats (
                 team_id INTEGER NOT NULL,
-                donor_name TEXT NOT NULL,
+                fah_donor_id INTEGER NOT NULL,
                 points INTEGER NOT NULL,
                 wus INTEGER NOT NULL,
-                PRIMARY KEY (team_id, donor_name)
+                PRIMARY KEY (team_id, fah_donor_id)
             )
         """)
 
@@ -107,29 +107,29 @@ def get_slack_user(fah_donor_id):
     return slack_id[0] if slack_id else None
 
 
-def update_member_stats(team_id, donor_name, points, wus):
+def update_donor_stats(team_id, fah_donor_id, points, wus):
     with sqlite3.connect(db_path) as conn:
         previous = conn.execute(
             """
             SELECT points, wus
-            FROM member_stats
-            WHERE team_id = ? AND donor_name = ?
+            FROM donor_stats
+            WHERE team_id = ? AND fah_donor_id = ?
         """,
-            (team_id, donor_name),
+            (team_id, fah_donor_id),
         ).fetchone()
 
         conn.execute(
             """
-            INSERT INTO member_stats (
-                team_id, donor_name, points, wus
+            INSERT INTO donor_stats (
+                team_id, fah_donor_id, points, wus
             )
             VALUES (?, ?, ?, ?)
-            ON CONFLICT(team_id, donor_name)
+            ON CONFLICT(team_id, fah_donor_id)
             DO UPDATE SET
                 points = excluded.points,
                 wus = excluded.wus
         """,
-            (team_id, donor_name, points, wus),
+            (team_id, fah_donor_id, points, wus),
         )
         if previous is None:
             return None
