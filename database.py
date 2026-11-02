@@ -222,7 +222,7 @@ def get_pending_announcements():
 
         return [dict(row) for row in rows]
 
-def mark_announcement_sent(announcement_id, slack_ts):
+def mark_announncement_sent(announcement_id, slack_ts):
     with sqlite3.connect(db_path) as conn:
         conn.execute("""
             UPDATE announcements
