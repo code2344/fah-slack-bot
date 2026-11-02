@@ -17,6 +17,16 @@ def init_db():
                 notifications INTEGER DEFAULT 1
             )
         """)
+
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS fah_accounts (
+                fah_donor_id INTEGER PRIMARY KEY,
+                slack_id TEXT NOT NULL,
+                FOREIGN KEY (slack_id) REFERENCES users(slack_id)
+            )
+        """)
+
+
 def link_user(slack_id, fah_donor_id):
     with sqlite3.connect(db_path) as conn:
         conn.execute("""
