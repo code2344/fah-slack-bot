@@ -20,6 +20,12 @@ parser.add_argument(
     help="Enable debug output"
 )
 
+parser.add_argument(
+    "--invalid-slack-id",
+    action="store_true",
+    help="make it always think a slack id is like a random one"
+)
+
 py_args = parser.parse_args()
 
 # Initializes your app with your bot token and socket mode handler
@@ -54,7 +60,10 @@ def handle_fah(ack, respond, command):
         subcommand = parts[0].lower() if parts else "help" # the subcommand is the first element of parts which is index zero, if it's empty then display help
         argument = parts[1] if len(parts) > 1 else None # argument is the bit after subcmd if there actually is one
 
-        user_id = command["user_id"]
+        if py_args.invalid_slack_id:
+            user_id = "X1234567890"
+        else:
+            user_id = command["user_id"]
 
         logger.info(user_id + " ran command: " + command["command"] + " " + command["text"])
 
