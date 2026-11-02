@@ -55,6 +55,15 @@ def link_user(slack_id, fah_donor_id):
 
         return "link_success"
 
+def unlink_user(slack_id, fah_donor_id):
+    with sqlite3.connect(db_path) as conn:
+        cursor = conn.execute("""
+            DELETE FROM fah_accounts
+            WHERE slack_id = ? AND fah_donor_id = ?
+        """, (slack_id, fah_donor_id))
+
+        return cursor.rowcount > 0
+
 def get_accounts(slack_id):
     with sqlite3.connect(db_path) as conn:
         rows = conn.execute("""
@@ -66,6 +75,9 @@ def get_accounts(slack_id):
 
 def get_slack_user(fah_donor_id):
     with sqlite3.connect(db_path) as conn:
-        conn.execute("""
+        slack_id = conn.execute("""
             SELECT slack_id
-            """)
+            FROM fah_accounts
+            WHERE fah_donor_id = ?
+            """, (fah_donor_id,)).fetchone()
+    return slack_id[0] if slack_id else None

@@ -84,7 +84,7 @@ def handle_fah(ack, respond, command):
                     logger.debug("linking user " + str(user_id) + " to donor id " + str(donor_id))
                     result = db.link_user(user_id, donor_id)
                     if result == "link_success":
-                        logger.INFO(str(slack_id) + " was successfully linked to donor id " + str(donor_id))
+                        logger.INFO(str(user_id) + " was successfully linked to donor id " + str(donor_id))
                         respond("Success! <@" + str(user_id) + "> linked to <https://stats.foldingathome.org/donor/id/" + str(donor_id) + "|Donor " + str(donor_id) + ">! run `/fah unlink <donor_id>` to unlink a specific donor ID, or run `/fah unlink all` to unlink all of your donor IDs.")
                     elif result == "already_linked":
                         logger.info(str(user_id) + " was already linked to " + str(donor_id))
@@ -93,6 +93,23 @@ def handle_fah(ack, respond, command):
                         respond("That account's already claimed!") # TODO: add "who's claimed it" logic
                 else:
                     respond("Usage: `/fah link <donor id>`\nError: it appears you put in an invalid donor id.\nThis is from the link you get if you click your username on <https://stats.foldingathome.org/team/" + str(team_id) + "|this page>.")
+        elif subcommand == "unlink":
+            if not argument:
+                logger.info("No user ID was provided")
+                respond("Error: No user ID was provided. Use `all` to unlink all linked ids.\nUsage: `/fah unlink <donor id>` or `/fah unlink all`.")
+            else:
+                if can_you_convert_it_to_int(argument):
+                    logger.debug("ID is a number, saving as donor_id!")
+                    donor_id = int(argument)
+                elif argument == "all":
+                    logger.info("user requested deletion of all")
+                    user_accounts = db.get_accounts(user_id)
+                    for account in user_accounts:
+                        return("account")
+                else:
+                    logger.info("Couldn't convert to int, invalid number.")
+                    respond("Usage: `/fah unlink <donor id>` or `/fah unlink all`.Error: it appears you put in an invalid donor id.\nThis is from the link you get if you click your username on <https://stats.foldingathome.org/team/" + str(team_id) + "|this page>.")
+                
     except Exception:
         logger.exception("Error handling command")
 
