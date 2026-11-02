@@ -37,6 +37,21 @@ def init_db():
             )
         """)
 
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS announcements (
+                id INTEGER PRIMARY KEY AUTOINCREMEMT,
+                team_id INTEGER NOT NULL,
+                fah_donor_id INTEGER NOT NULL,
+                donor_name TEXT NOT NULL,
+                points_delta INTEGER NOT NULL,
+                wus_delta INTEGER NOT NULL,
+                status TEXT NOT NULL DEFAULT 'pending',
+                slack_ts TEXT,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                sent_at TEXT
+            )
+        """)
+
 
 def link_user(slack_id, fah_donor_id):
     with sqlite3.connect(db_path) as conn:
