@@ -34,8 +34,22 @@ def link_user(slack_id, fah_donor_id):
             (slack_id,)
         )
 
+        existing = conn.execute("""
+            SELECT slack_id
+            FROM fah_accounts
+            WHERE fah_donor_id = ?
+        """, (fah_donor_id,)).fetchone()
+
+        if existing:
+            if existing[0] == slack_id:
+                return "already_linked"
+            else:
+                return "claimed"
+
         conn.execute("""
             INSERT INTO fah_accounts (slack_id, fah_donor_id)
             VALUES (?, ?)
         """, (slack_id, fah_donor_id))
+
+        return "link_success"
 
