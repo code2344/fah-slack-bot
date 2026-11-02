@@ -5,13 +5,22 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-FOLDING_STATS_BASE_URL = os.environ.get("FOLDING_STATS_BASE_URL")
+API_BASE_URL = os.environ.get("API_BASE_URL")
 
 def get_team_members(team_id):
     response = requests.get(
-        f"{FOLDING_STATS_BASE_URL}/teams/{team_id}/members",
+        f"{API_BASE_URL}/teams/{team_id}/members",
         timeout=20
     )
     response.raise_for_status()
-    return response.json()
+    data = response.json()
+
+    headers = data[0]
+    members = [
+        dict(zip(headers, row))
+        for row in data[1:]
+    ]
+
+    return members
+    
     
