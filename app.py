@@ -2,12 +2,25 @@ import os
 import sqlite3
 import logging
 import database
+import argparse
 
 from dotenv import load_dotenv
 from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 
 load_dotenv()
+
+parser = argparse.ArgumentParser(
+    description="Folding@home slack bot"
+)
+
+parser.add_argument(
+    "-d", "--debug",
+    action="store_true",
+    help="Enable debug output"
+)
+
+py_args = parser.parse_args()
 
 # Initializes your app with your bot token and socket mode handler
 app = App(token=os.environ.get("SLACK_BOT_TOKEN"))
@@ -18,7 +31,7 @@ team_id = os.environ.get("FAH_TEAM_ID")
 db = database
 
 logging.basicConfig(
-    level=logging.INFO,  # Capture INFO, WARNING, ERROR, and CRITICAL
+    level=logging.DEBUG if py_args.debug else logging.INFO,  # Capture INFO, WARNING, ERROR, and CRITICAL
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
     handlers=[logging.StreamHandler(), logging.FileHandler("app.log", mode="a")]
 )
@@ -45,8 +58,8 @@ def handle_fah(ack, respond, command):
         )
     elif subcommand == "link":
         if not argument:
-            respond("Usage: `/fah link <donor id>`; this is from the link you get if you click your username on <https://stats.foldingathome.org/team/" + team_id + "|this page>".")
-        
+            respond("Usage: `/fah link <donor id>`\nThis is from the link you get if you click your username on <https://stats.foldingathome.org/team/" + str(team_id) + "|this page>.")
+
 
 
 # Start your app
