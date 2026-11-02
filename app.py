@@ -1,5 +1,6 @@
 import os
 import sqlite3
+import logging
 
 from dotenv import load_dotenv
 from slack_bolt import App
@@ -22,13 +23,17 @@ def handle_fah(ack, respond, command):
 
     user_id = command["user_id"]
 
+    logging.info(user_id, " ran command: ", command["command"], " ", command["text"])
+    
     if subcommand == "help":
         respond(
             "*Available commands*:\n"
-            "`/fah help` - prints this help dialog"
+            "`/fah help` - prints this help dialog\n"
+            "You ran: " + "`" + str(command["command"]) + str(command["text"])
         )
 
 
 # Start your app
 if __name__ == "__main__":
     SocketModeHandler(app, os.environ["SLACK_APP_TOKEN"]).start()
+    logging.info("App started!")
