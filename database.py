@@ -155,3 +155,55 @@ def update_donor_stats(team_id, fah_donor_id, points, wus):
             "points": points - old_points,
             "wus": wus - old_wus
         }
+
+def process_team_members(team_id, members):
+    queued = 0
+
+    with sqlite3.connect(db_path) as conn:
+        for member in members:
+            donor_id = member["id"]
+            donor_name = member["name"]
+            points = member["score"]
+            wus = member["wus"]
+
+            previous = conn.execute("""
+                SELECT points, wus
+                FROM donor_stats
+                WHERE team_id = ? AND fah_donor_id = ?
+            """,(team_id, fah_donor_id),).fetchone()
+
+            if previous is not None:
+                old_points, old_wus = previous
+                points_delta = points - old_points
+                wus_delta = wus - old_wus
+
+                if wus_delta > 0:
+                    conn.execute("""
+                        INSERT INTO announcements (
+                        team_id,
+                        fah_donor_id,
+                        donor_name,
+                        points_delta,
+                        wus_delta
+                        )
+                        VALUES (?, ?, ?, ?, ?)
+                    """, (
+                        team_id,
+                        donor_id,
+                        donor_name,
+                        points_delta,
+                        wus_delta
+                    ))
+
+                    queued += 1
+            conn.execute("""
+                INSERT INTO donor_stats (
+                    team_id, fah_donor_id, points, wus
+                )
+                VALUES (?, ?, ?, ?)
+                ON CONFLICT(team_id, fah_donor_id)
+                DO UPDATE SET 
+                    points = excluded.points
+                    wus = excluded.wus
+            """, (team_id, donor_id, points, wus))
+    return queued
