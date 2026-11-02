@@ -1,6 +1,7 @@
 import os
 import sqlite3
 import logging
+import database
 
 from dotenv import load_dotenv
 from slack_bolt import App
@@ -11,6 +12,10 @@ load_dotenv()
 # Initializes your app with your bot token and socket mode handler
 app = App(token=os.environ.get("SLACK_BOT_TOKEN"))
 logger = logging.getLogger(__name__)
+
+team_id = os.environ.get("FAH_TEAM_ID")
+
+db = database
 
 logging.basicConfig(
     level=logging.INFO,  # Capture INFO, WARNING, ERROR, and CRITICAL
@@ -39,6 +44,8 @@ def handle_fah(ack, respond, command):
             "You ran: " + "`" + str(command["command"]) + " " + str(command["text"] + "`")
         )
     elif subcommand == "link":
+        if not argument:
+            respond("Usage: `/fah link <donor id>`; this is from the link you get if you click your username on <https://stats.foldingathome.org/team/" + team_id + "|this page>".")
         
 
 
